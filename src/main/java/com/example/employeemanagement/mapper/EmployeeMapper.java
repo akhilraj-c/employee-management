@@ -1,6 +1,7 @@
 package com.example.employeemanagement.mapper;
 
 import com.example.employeemanagement.dto.request.EmployeeCreateRequest;
+import com.example.employeemanagement.dto.request.EmployeeUpdateRequest;
 import com.example.employeemanagement.dto.response.EmployeeResponse;
 import com.example.employeemanagement.entity.Employee;
 import org.springframework.stereotype.Component;
@@ -46,5 +47,18 @@ public class EmployeeMapper {
                         ? employee.getReportingManager().getName()
                         : null
         );
+    }
+
+    public void updateEntity(
+            Employee employee,
+            EmployeeUpdateRequest request
+    ) {
+        employee.setName(request.name());
+        employee.setDateOfBirth(request.dateOfBirth());
+        employee.setSalary(request.salary());
+        employee.setAddress(request.address());
+        employee.setRole(request.role());
+        employee.setJoiningDate(request.joiningDate());
+        employee.setYearlyBonusPercentage(request.bonusPercentage());
     }
 }

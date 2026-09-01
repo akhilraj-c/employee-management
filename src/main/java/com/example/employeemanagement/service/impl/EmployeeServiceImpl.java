@@ -57,16 +57,69 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public EmployeeResponse updateEmployee(
             Long employeeId,
             EmployeeUpdateRequest request
     ) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Employee not found: " + employeeId
+                        )
+                );
+
+        Department department = departmentRepository
+                .findById(request.departmentId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Department not found: " + request.departmentId()
+                        )
+                );
+
+        Employee manager = null;
+
+        if (request.managerId() != null) {
+
+            if (request.managerId().equals(employeeId)) {
+                throw new IllegalArgumentException(
+                        "Employee cannot report to themselves"
+                );
+            }
+
+            manager = employeeRepository
+                    .findById(request.managerId())
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException(
+                                    "Manager not found: " + request.managerId()
+                            )
+                    );
+        }
+
+        employeeMapper.updateEntity(employee, request);
+
+        employee.setDepartment(department);
+        employee.setReportingManager(manager);
+        employee.setUpdatedAt(java.time.LocalDateTime.now());
+
+        Employee updatedEmployee = employeeRepository.save(employee);
+
+        return employeeMapper.toResponse(updatedEmployee);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EmployeeResponse getEmployeeById(Long employeeId) {
-        throw new UnsupportedOperationException("Not implemented yet");
+
+        Employee employee = employeeRepository
+                .findById(employeeId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Employee not found: " + employeeId
+                        )
+                );
+
+        return employeeMapper.toResponse(employee);
     }
 
     @Override
