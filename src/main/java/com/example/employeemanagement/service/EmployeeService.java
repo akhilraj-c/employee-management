@@ -3,6 +3,8 @@ package com.example.employeemanagement.service;
 import com.example.employeemanagement.dto.request.EmployeeCreateRequest;
 import com.example.employeemanagement.dto.request.EmployeeUpdateRequest;
 import com.example.employeemanagement.dto.response.EmployeeResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface EmployeeService {
 
@@ -21,4 +23,7 @@ public interface EmployeeService {
             Long employeeId,
             Long departmentId
     );
+
+    Page<EmployeeResponse> getEmployees(Pageable pageable);
+
 }

@@ -11,6 +11,8 @@ import com.example.employeemanagement.repository.DepartmentRepository;
 import com.example.employeemanagement.repository.EmployeeRepository;
 import com.example.employeemanagement.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -133,5 +135,14 @@ public class EmployeeServiceImpl implements EmployeeService {
             Long departmentId
     ) {
         throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<EmployeeResponse> getEmployees(Pageable pageable) {
+
+        return employeeRepository
+                .findAll(pageable)
+                .map(employeeMapper::toResponse);
     }
 }
