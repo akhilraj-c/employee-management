@@ -4,9 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import tools.jackson.databind.exc.InvalidFormatException;
+
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
@@ -20,6 +23,7 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
 
         ErrorResponse response = new ErrorResponse(
+                false,
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
                 "Not Found",
@@ -36,14 +40,15 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
 
         ErrorResponse response = new ErrorResponse(
+                false,
                 LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Bad Request",
+                HttpStatus.CONFLICT.value(),
+                "Conflict",
                 exception.getMessage(),
                 request.getRequestURI()
         );
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -58,6 +63,7 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
 
         ErrorResponse response = new ErrorResponse(
+                false,
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 "Validation Failed",
@@ -74,6 +80,7 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
 
         ErrorResponse response = new ErrorResponse(
+                false,
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 "Validation Failed",
@@ -84,4 +91,50 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleMessageNotReadable(
+            HttpMessageNotReadableException ex,
+            HttpServletRequest request) {
+
+        String message = "Invalid request body";
+
+        Throwable cause = ex.getCause();
+
+        if (cause instanceof InvalidFormatException exception) {
+
+            String fieldName = getFieldName(exception);
+
+            message = String.format(
+                    "Invalid value for field '%s'",
+                    fieldName
+            );
+        }
+
+        ErrorResponse response = new ErrorResponse(
+                false,
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                message,
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .badRequest()
+                .body(response);
+    }
+
+    private String getFieldName(
+            InvalidFormatException exception) {
+
+        if (exception.getPath() == null ||
+                exception.getPath().isEmpty()) {
+
+            return "request";
+        }
+
+        return exception.getPath()
+                .get(exception.getPath().size() - 1)
+                .getPropertyName();
+    }
 }

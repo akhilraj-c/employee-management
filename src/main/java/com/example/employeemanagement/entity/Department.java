@@ -11,7 +11,15 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "departments")
+@Table(
+        name = "departments",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_department_name",
+                        columnNames = "name"
+                )
+        }
+)
 public class Department {
 
     @Id
@@ -22,8 +30,22 @@ public class Department {
     private String name;
 
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
 
     @ManyToOne
     @JoinColumn(name = "head_employee_id")
     private Employee head;
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
