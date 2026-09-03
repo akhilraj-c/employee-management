@@ -10,8 +10,9 @@ import lombok.Getter;
 public class ApiResponse<T> {
 
     private boolean success;
-    private T data;
     private String message;
+    private T data;
+
 
     public static <T> ApiResponse<T> success(String message, T data) {
         return ApiResponse.<T>builder()

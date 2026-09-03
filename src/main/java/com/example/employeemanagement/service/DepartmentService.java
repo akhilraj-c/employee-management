@@ -3,6 +3,7 @@ package com.example.employeemanagement.service;
 import com.example.employeemanagement.dto.request.DepartmentCreateRequest;
 import com.example.employeemanagement.dto.request.DepartmentUpdateRequest;
 import com.example.employeemanagement.dto.request.PaginationRequest;
+import com.example.employeemanagement.dto.response.DepartmentAnalyticsResponse;
 import com.example.employeemanagement.dto.response.DepartmentExpandedResponse;
 import com.example.employeemanagement.dto.response.DepartmentResponse;
 import com.example.employeemanagement.dto.response.PagedResponse;
@@ -34,5 +35,9 @@ public interface DepartmentService {
     );
     DepartmentExpandedResponse getDepartmentWithEmployees(
             Long departmentId
+    );
+
+    PagedResponse<DepartmentAnalyticsResponse> getDepartmentAnalytics(
+            PaginationRequest pageable
     );
 }

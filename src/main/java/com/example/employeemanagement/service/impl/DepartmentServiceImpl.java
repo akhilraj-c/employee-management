@@ -3,10 +3,7 @@ package com.example.employeemanagement.service.impl;
 import com.example.employeemanagement.dto.request.DepartmentCreateRequest;
 import com.example.employeemanagement.dto.request.DepartmentUpdateRequest;
 import com.example.employeemanagement.dto.request.PaginationRequest;
-import com.example.employeemanagement.dto.response.DepartmentExpandedResponse;
-import com.example.employeemanagement.dto.response.DepartmentResponse;
-import com.example.employeemanagement.dto.response.EmployeeResponse;
-import com.example.employeemanagement.dto.response.PagedResponse;
+import com.example.employeemanagement.dto.response.*;
 import com.example.employeemanagement.entity.Department;
 import com.example.employeemanagement.entity.Employee;
 import com.example.employeemanagement.exception.BusinessException;
@@ -218,5 +215,14 @@ public class DepartmentServiceImpl implements DepartmentService {
                 department,
                 employees
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PagedResponse<DepartmentAnalyticsResponse> getDepartmentAnalytics(
+            PaginationRequest paginationRequest
+    ) {
+        Pageable pageable1 = PaginationUtils.toPageable(paginationRequest);
+        return PaginationUtils.toPagedResponse(departmentRepository.findDepartmentAnalytics(pageable1));
     }
 }

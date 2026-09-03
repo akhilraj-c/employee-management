@@ -4,12 +4,16 @@ import com.example.employeemanagement.dto.request.DepartmentCreateRequest;
 import com.example.employeemanagement.dto.request.DepartmentUpdateRequest;
 import com.example.employeemanagement.dto.request.PaginationRequest;
 import com.example.employeemanagement.dto.response.ApiResponse;
+import com.example.employeemanagement.dto.response.DepartmentAnalyticsResponse;
 import com.example.employeemanagement.dto.response.DepartmentResponse;
 import com.example.employeemanagement.dto.response.PagedResponse;
 import com.example.employeemanagement.exception.BusinessException;
 import com.example.employeemanagement.service.DepartmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -121,6 +125,19 @@ public class DepartmentController {
                         "Department deleted successfully",
                         null
                 )
+        );
+    }
+
+    @GetMapping("/analytics")
+    public ResponseEntity<ApiResponse<PagedResponse<DepartmentAnalyticsResponse>>> getDepartmentAnalytics(
+            @Valid PaginationRequest paginationRequest
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Analytics fetched successfully",
+                        departmentService.getDepartmentAnalytics(paginationRequest)
+                )
+
         );
     }
 }
