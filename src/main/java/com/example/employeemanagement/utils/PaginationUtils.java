@@ -25,6 +25,18 @@ public final class PaginationUtils {
         );
     }
 
+    public static Pageable toPageable(
+            PaginationRequest request,
+            Sort sort
+    ) {
+
+        return PageRequest.of(
+                request.getPage() - 1,
+                request.getSize(),
+                sort
+        );
+    }
+
     public static <T> PagedResponse<T> toPagedResponse(Page<T> page) {
 
         PaginationResponse pagination =

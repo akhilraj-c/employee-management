@@ -2,6 +2,8 @@ package com.example.employeemanagement.repository;
 
 import com.example.employeemanagement.dto.response.EmployeeLookupResponse;
 import com.example.employeemanagement.entity.Employee;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +13,6 @@ import java.util.Optional;
 import java.util.List;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
-    boolean existsByReportingManagerId(Long managerId);
 
     boolean existsByDepartmentId(Long departmentId);
 
@@ -36,6 +37,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
         FROM Employee e
         ORDER BY e.name ASC, e.id ASC
         """)
-    List<EmployeeLookupResponse> findEmployeeLookup();
+    Page<EmployeeLookupResponse> findEmployeeLookup(Pageable pageable);
 
+    List<Employee> findAllByDepartmentIdIn(List<Long> departmentIds);
 }

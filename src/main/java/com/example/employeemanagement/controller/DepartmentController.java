@@ -8,16 +8,12 @@ import com.example.employeemanagement.dto.response.DepartmentResponse;
 import com.example.employeemanagement.dto.response.PagedResponse;
 import com.example.employeemanagement.exception.BusinessException;
 import com.example.employeemanagement.service.DepartmentService;
-import com.example.employeemanagement.utils.PaginationUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/departments")

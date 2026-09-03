@@ -6,10 +6,7 @@ import com.example.employeemanagement.dto.request.PaginationRequest;
 import com.example.employeemanagement.dto.response.EmployeeLookupResponse;
 import com.example.employeemanagement.dto.response.EmployeeResponse;
 import com.example.employeemanagement.dto.response.PagedResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface EmployeeService {
 
@@ -22,7 +19,6 @@ public interface EmployeeService {
 
     EmployeeResponse getEmployeeById(Long employeeId);
 
-    void deleteEmployee(Long employeeId);
 
     EmployeeResponse moveEmployeeDepartment(
             Long employeeId,
@@ -33,6 +29,6 @@ public interface EmployeeService {
             PaginationRequest request
     );
 
-    List<EmployeeLookupResponse> getEmployeeLookup();
+    PagedResponse<EmployeeLookupResponse> getEmployeeLookup(PaginationRequest paginationRequest);
 
 }

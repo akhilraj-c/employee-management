@@ -6,16 +6,12 @@ import com.example.employeemanagement.dto.request.EmployeeUpdateRequest;
 import com.example.employeemanagement.dto.request.PaginationRequest;
 import com.example.employeemanagement.dto.response.ApiResponse;
 import com.example.employeemanagement.dto.response.EmployeeResponse;
-import com.example.employeemanagement.dto.response.PagedResponse;
 import com.example.employeemanagement.service.EmployeeService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.employeemanagement.utils.PaginationUtils;
 
 @RestController
 @RequestMapping("/api/v1/employees")
@@ -43,11 +39,15 @@ public class EmployeeController {
     }
 
     @GetMapping("/{employeeId}")
-    public ResponseEntity<EmployeeResponse> getEmployeeById(
+    public ResponseEntity<ApiResponse<EmployeeResponse>> getEmployeeById(
             @PathVariable Long employeeId
     ) {
         return ResponseEntity.ok(
-                employeeService.getEmployeeById(employeeId)
+                ApiResponse.success(
+                        "Employee fetched successfully",
+                        employeeService.getEmployeeById(employeeId)
+                )
+
         );
     }
 
@@ -71,14 +71,6 @@ public class EmployeeController {
         );
     }
 
-    @DeleteMapping("/{employeeId}")
-    public ResponseEntity<Void> deleteEmployee(
-            @PathVariable Long employeeId
-    ) {
-        employeeService.deleteEmployee(employeeId);
-
-        return ResponseEntity.noContent().build();
-    }
 
     //6 Validated and completed
     @PatchMapping("/{employeeId}/department")
@@ -125,7 +117,7 @@ public class EmployeeController {
             return ResponseEntity.ok(
                     ApiResponse.success(
                             "Employee lookup data fetched successfully",
-                            employeeService.getEmployeeLookup()
+                            employeeService.getEmployeeLookup(paginationRequest)
                     )
             );
         }

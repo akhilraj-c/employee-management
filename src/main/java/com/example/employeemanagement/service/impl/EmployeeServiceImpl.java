@@ -18,6 +18,7 @@ import com.example.employeemanagement.utils.PaginationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -243,29 +244,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    @Transactional
-    public void deleteEmployee(Long employeeId) {
-
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Employee not found: " + employeeId
-                        )
-                );
-
-        boolean hasReportingEmployees =
-                employeeRepository.existsByReportingManagerId(employeeId);
-
-        if (hasReportingEmployees) {
-            throw new IllegalStateException(
-                    "Employee cannot be deleted because other employees report to this employee"
-            );
-        }
-
-        employeeRepository.delete(employee);
-    }
-
-    @Override
     public EmployeeResponse moveEmployeeDepartment(Long employeeId, Long departmentId) {
         Employee employee =
                 employeeRepository.findById(employeeId)
@@ -316,37 +294,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeMapper.toResponse(updatedEmployee);
     }
 
-//    @Override
-//    @Transactional
-//    public EmployeeResponse updateEmployeeDepartment(
-//            Long employeeId,
-//            Long departmentId
-//    ) {
-//
-//        Employee employee = employeeRepository.findById(employeeId)
-//                .orElseThrow(() ->
-//                        new ResourceNotFoundException(
-//                                "Employee not found: " + employeeId
-//                        )
-//                );
-//
-//        Department department = departmentRepository.findById(departmentId)
-//                .orElseThrow(() ->
-//                        new ResourceNotFoundException(
-//                                "Department not found: " + departmentId
-//                        )
-//                );
-//
-//        employee.setDepartment(department);
-//        employee.setUpdatedAt(java.time.LocalDateTime.now());
-//
-//        Employee updatedEmployee = employeeRepository.save(employee);
-//
-//        return employeeMapper.toResponse(updatedEmployee);
-//    }
-
-
-
 
     @Override
     @Transactional(readOnly = true)
@@ -364,8 +311,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EmployeeLookupResponse> getEmployeeLookup() {
-
-        return employeeRepository.findEmployeeLookup();
+    public PagedResponse<EmployeeLookupResponse> getEmployeeLookup(PaginationRequest paginationRequest) {
+        Pageable pageable = PaginationUtils.toPageable(
+                paginationRequest,
+                Sort.by(
+                        Sort.Order.asc("name"),
+                        Sort.Order.asc("id")
+                )
+        );
+        PagedResponse<EmployeeLookupResponse> response = PaginationUtils.toPagedResponse(
+                employeeRepository.findEmployeeLookup(pageable)
+        );
+        return response;
     }
 }
