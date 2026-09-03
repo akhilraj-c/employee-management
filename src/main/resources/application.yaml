@@ -1,5 +1,6 @@
 server:
   port: 8081
+
 spring:
   application:
     name: employee-management
@@ -9,6 +10,10 @@ spring:
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  sql:
+    init:
+      mode: never # always (to create and insert data always in run)
 
   jpa:
     hibernate:
