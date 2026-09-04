@@ -86,7 +86,7 @@ graph TD
 ### 3.1 Entity-Relationship (ER) Diagram
 
 ```mermaid
-erdiagram
+erDiagram
     DEPARTMENTS {
         BIGINT id PK "AUTO_INCREMENT"
         VARCHAR name UK "NOT NULL"
