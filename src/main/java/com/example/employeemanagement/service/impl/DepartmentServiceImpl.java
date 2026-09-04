@@ -41,7 +41,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         // Prevent duplicate department names
         if (departmentRepository.existsByNameIgnoreCase(request.name())) {
             throw new BusinessException(
-                    "Department with name '" + request.name() +"' already exists"
+                    "Department with name '" + request.name() +"' already exists",
+                    org.springframework.http.HttpStatus.CONFLICT,
+                    "DUPLICATE_DEPARTMENT"
             );
         }
 
@@ -55,7 +57,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         } catch (DataIntegrityViolationException ex) {
             // Protect against duplicate creation caused by concurrent requests
             throw new BusinessException(
-                    "Department already exists: " + request.name()
+                    "Department already exists: " + request.name(),
+                    org.springframework.http.HttpStatus.CONFLICT,
+                    "DUPLICATE_DEPARTMENT"
             );
         }
 
@@ -181,8 +185,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         if (hasEmployees) {
             throw new BusinessException(
-                    "Department cannot be deleted because "
-                            + "employees are assigned to it"
+                    "Department cannot be deleted because employees are assigned to it",
+                    org.springframework.http.HttpStatus.CONFLICT,
+                    "DEPARTMENT_NOT_EMPTY"
             );
         }
 

@@ -13,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.validation.annotation.Validated;
+
+@Validated
 @RestController
 @RequestMapping("/api/v1/employees")
 @RequiredArgsConstructor
