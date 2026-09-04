@@ -12,10 +12,7 @@ public record DepartmentCreateRequest(
                 message = "Department name must contain single spaces between words and no leading or trailing spaces"
         )
 
-        String name,
-
-        @Positive(message = "Head employee ID must be greater than 0")
-        Long headEmployeeId
+        String name
 
 ) {
 }

@@ -244,6 +244,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public EmployeeResponse moveEmployeeDepartment(Long employeeId, Long departmentId) {
         Employee employee =
                 employeeRepository.findById(employeeId)

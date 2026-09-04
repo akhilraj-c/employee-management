@@ -51,7 +51,10 @@ public class DepartmentController {
                     value = "expand",
                     required = false
             )
-            String expand
+            String expand,
+            @Valid
+            @ModelAttribute
+            PaginationRequest paginationRequest
     ) {
 
         if (expand == null || expand.isBlank()) {
@@ -72,7 +75,8 @@ public class DepartmentController {
                     ApiResponse.success(
                             "Department with employees fetched successfully",
                             departmentService.getDepartmentWithEmployees(
-                                    departmentId
+                                    departmentId,
+                                    paginationRequest
                             )
                     )
             );

@@ -4,10 +4,10 @@ import com.example.employeemanagement.dto.request.DepartmentCreateRequest;
 import com.example.employeemanagement.dto.response.DepartmentExpandedResponse;
 import com.example.employeemanagement.dto.response.DepartmentResponse;
 import com.example.employeemanagement.dto.response.EmployeeResponse;
+import com.example.employeemanagement.dto.response.PagedResponse;
 import com.example.employeemanagement.entity.Department;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 
 @Component
 public class DepartmentMapper {
@@ -38,7 +38,7 @@ public class DepartmentMapper {
 
     public DepartmentExpandedResponse toExpandedResponse(
             Department department,
-            List<EmployeeResponse> employees
+            PagedResponse<EmployeeResponse> employees
     ) {
 
         return new DepartmentExpandedResponse(

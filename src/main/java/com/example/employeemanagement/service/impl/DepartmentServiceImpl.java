@@ -192,7 +192,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     @Transactional(readOnly = true)
     public DepartmentExpandedResponse getDepartmentWithEmployees(
-            Long departmentId
+            Long departmentId,
+            PaginationRequest paginationRequest
     ) {
 
         Department department =
@@ -204,16 +205,17 @@ public class DepartmentServiceImpl implements DepartmentService {
                                 )
                         );
 
-        List<EmployeeResponse> employees =
+        Pageable pageable = PaginationUtils.toPageable(paginationRequest);
+        Page<EmployeeResponse> employees =
                 employeeRepository
-                        .findAllByDepartmentId(departmentId)
-                        .stream()
-                        .map(employeeMapper::toResponse)
-                        .toList();
+                        .findAllByDepartmentId(departmentId,pageable)
+                        .map(employeeMapper::toResponse);
+
+        PagedResponse<EmployeeResponse> employeeResponsePagedResponse= PaginationUtils.toPagedResponse(employees);
 
         return departmentMapper.toExpandedResponse(
                 department,
-                employees
+                employeeResponsePagedResponse
         );
     }
 

@@ -27,7 +27,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Long> findReportingManagerId(
             @Param("employeeId") Long employeeId
     );
-    List<Employee> findAllByDepartmentId(Long departmentId);
+    Page<Employee> findAllByDepartmentId(Long departmentId,Pageable pageable);
 
     @Query("""
         SELECT new com.example.employeemanagement.dto.response.EmployeeLookupResponse(

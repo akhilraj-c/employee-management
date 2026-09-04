@@ -9,6 +9,6 @@ public record DepartmentExpandedResponse(
         LocalDateTime createdAt,
         Long headEmployeeId,
         String headEmployeeName,
-        List<EmployeeResponse> employees
+        PagedResponse<EmployeeResponse> employees
 ) {
 }

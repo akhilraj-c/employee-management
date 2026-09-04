@@ -34,7 +34,8 @@ public interface DepartmentService {
             Long departmentId
     );
     DepartmentExpandedResponse getDepartmentWithEmployees(
-            Long departmentId
+            Long departmentId,
+            PaginationRequest paginationRequest
     );
 
     PagedResponse<DepartmentAnalyticsResponse> getDepartmentAnalytics(
