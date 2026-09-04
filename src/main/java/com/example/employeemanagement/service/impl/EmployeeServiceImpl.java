@@ -247,7 +247,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public EmployeeResponse moveEmployeeDepartment(Long employeeId, Long departmentId) {
         Employee employee =
-                employeeRepository.findById(employeeId)
+                employeeRepository.findByIdWithLock(employeeId)
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
                                         "Employee not found: "
@@ -256,7 +256,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                         );
 
         Department targetDepartment =
-                departmentRepository.findById(departmentId)
+                departmentRepository.findByIdWithLock(departmentId)
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
                                         "Department not found: "

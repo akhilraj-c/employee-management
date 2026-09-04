@@ -51,6 +51,40 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
+    @ExceptionHandler(org.springframework.orm.ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponse> handleOptimisticLockException(
+            org.springframework.orm.ObjectOptimisticLockingFailureException exception,
+            HttpServletRequest request) {
+
+        ErrorResponse response = new ErrorResponse(
+                false,
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "Conflict",
+                "The resource was modified concurrently by another transaction. Please refresh and retry.",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
+            org.springframework.dao.DataIntegrityViolationException exception,
+            HttpServletRequest request) {
+
+        ErrorResponse response = new ErrorResponse(
+                false,
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "Conflict",
+                "Operation violates database relational integrity constraints.",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(
             MethodArgumentNotValidException exception,

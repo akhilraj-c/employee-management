@@ -5,9 +5,19 @@ import com.example.employeemanagement.entity.Department;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import jakarta.persistence.LockModeType;
+
+import java.util.Optional;
 
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
+    
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT d FROM Department d WHERE d.id = :id")
+    Optional<Department> findByIdWithLock(@Param("id") Long id);
+
     boolean existsByNameIgnoreCase(String name);
 
     @Query(value = """

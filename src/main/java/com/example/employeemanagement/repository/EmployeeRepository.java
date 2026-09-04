@@ -8,11 +8,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
 
+import java.util.Optional;
 import java.util.List;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT e FROM Employee e WHERE e.id = :id")
+    Optional<Employee> findByIdWithLock(@Param("id") Long id);
 
     boolean existsByDepartmentId(Long departmentId);
 
