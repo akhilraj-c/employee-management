@@ -88,8 +88,27 @@ Application settings can be configured in `src/main/resources/application.yaml` 
 ```
 
 ### Run Application
+
+Provide your MySQL database password dynamically via environment variables or Maven JVM flags:
+
+#### PowerShell (Windows)
+```powershell
+$env:DB_PASSWORD="your_password"; ./mvnw spring-boot:run
+```
+
+#### Bash / Zsh (Linux / macOS)
 ```bash
-./mvnw spring-boot:run
+DB_PASSWORD=your_password ./mvnw spring-boot:run
+```
+
+#### Windows Command Prompt (CMD)
+```cmd
+set DB_PASSWORD=your_password && mvnw spring-boot:run
+```
+
+#### Via Maven JVM Parameter
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.jvmArguments="-DDB_PASSWORD=your_password"
 ```
 
 ### Run Tests
