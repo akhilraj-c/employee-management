@@ -197,12 +197,13 @@ ALTER TABLE departments
 #### Standard Paged Response (`PagedResponse<T>`)
 ```json
 {
-  "content": [ ... ],
-  "pageNumber": 0,
-  "pageSize": 20,
-  "totalElements": 25,
-  "totalPages": 2,
-  "isLast": false
+  "items": [ ... ],
+  "pagination": {
+    "page": 1,
+    "size": 20,
+    "totalElements": 25,
+    "totalPages": 2
+  }
 }
 ```
 
