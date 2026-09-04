@@ -89,6 +89,7 @@ graph TD
 erDiagram
     DEPARTMENTS {
         BIGINT id PK "AUTO_INCREMENT"
+        BIGINT version "Optimistic Locking"
         VARCHAR name UK "NOT NULL"
         BIGINT head_employee_id FK "NULLable"
         DATETIME created_at
@@ -97,6 +98,7 @@ erDiagram
 
     EMPLOYEES {
         BIGINT id PK "AUTO_INCREMENT"
+        BIGINT version "Optimistic Locking"
         VARCHAR name "NOT NULL"
         DATE date_of_birth "NULLable"
         DECIMAL salary "NOT NULL (15,2)"
@@ -211,11 +213,13 @@ ALTER TABLE departments
 ```json
 {
   "success": false,
-  "timestamp": "2026-09-04T10:25:00",
+  "timestamp": "2026-09-04T11:30:00Z",
   "status": 409,
   "error": "Conflict",
+  "errorCode": "DEPARTMENT_NOT_EMPTY",
   "message": "Department cannot be deleted because employees are assigned to it",
-  "path": "/api/v1/departments/1"
+  "path": "/api/v1/departments/1",
+  "fieldErrors": null
 }
 ```
 
@@ -243,10 +247,10 @@ sequenceDiagram
         EmployeeRepo-->>EmployeeService: returns parentManagerId
         alt currentId == employeeId
             EmployeeService-->>EmployeeController: Throw BusinessException("Circular reporting hierarchy is not allowed")
-            EmployeeController-->>Client: HTTP 409 Conflict
+            EmployeeController-->>Client: HTTP 400 Bad Request / 409 Conflict
         else Visited Set contains currentId
             EmployeeService-->>EmployeeController: Throw BusinessException("Invalid circular reporting hierarchy detected")
-            EmployeeController-->>Client: HTTP 409 Conflict
+            EmployeeController-->>Client: HTTP 400 Bad Request / 409 Conflict
         end
     end
     
@@ -261,13 +265,19 @@ sequenceDiagram
 
 ### 6.1 Exception Handling Architecture
 
-| Exception Class | Trigger Condition | Mapped HTTP Status |
-| :--- | :--- | :--- |
-| `ResourceNotFoundException` | Entity ID not found in DB (Employee / Department / Manager) | `404 NOT_FOUND` |
-| `BusinessException` | Invariant broken (Circular hierarchy, Duplicate name, Active staff on delete) | `409 CONFLICT` |
-| `MethodArgumentNotValidException` | Payload failed JSR-380 `@Valid` checks | `400 BAD_REQUEST` |
-| `ConstraintViolationException` | Path variable / Request parameter validation failure | `400 BAD_REQUEST` |
-| `HttpMessageNotReadableException` | Malformed JSON / Data type parse mismatch | `400 BAD_REQUEST` |
+| Exception Class | Trigger Condition | Mapped HTTP Status | Error Code | Log Level |
+| :--- | :--- | :--- | :--- | :--- |
+| `ResourceNotFoundException` | Entity ID not found in DB (Employee / Department / Manager) | `404 NOT_FOUND` | `RESOURCE_NOT_FOUND` | `WARN` |
+| `BusinessException` | Business rule invariant broken or resource state conflict | `400 BAD_REQUEST` / `409 CONFLICT` | `BUSINESS_RULE_VIOLATION` / Custom | `WARN` |
+| `ObjectOptimisticLockingFailureException` | Concurrent update on stale entity `@Version` | `409 CONFLICT` | `CONCURRENT_MODIFICATION` | `WARN` |
+| `DataIntegrityViolationException` | Relational FK constraint / Unique index violation | `409 CONFLICT` | `DATA_INTEGRITY_VIOLATION` | `WARN` |
+| `MethodArgumentNotValidException` | Payload failed JSR-380 `@Valid` checks | `400 BAD_REQUEST` | `VALIDATION_FAILED` | `WARN` |
+| `ConstraintViolationException` | Path variable / Request parameter validation failure | `400 BAD_REQUEST` | `CONSTRAINT_VIOLATION` | `WARN` |
+| `HttpMessageNotReadableException` | Malformed JSON / Data type parse mismatch | `400 BAD_REQUEST` | `INVALID_REQUEST_BODY` | `WARN` |
+| `MethodArgumentTypeMismatchException` | Path variable type coercion mismatch (e.g. `/employees/abc`) | `400 BAD_REQUEST` | `TYPE_MISMATCH` | `WARN` |
+| `HttpRequestMethodNotSupportedException` | Unsupported HTTP verb (e.g. POST to GET-only path) | `405 METHOD_NOT_ALLOWED` | `METHOD_NOT_SUPPORTED` | `WARN` |
+| `HttpMediaTypeNotSupportedException` | Unsupported Content-Type header | `415 UNSUPPORTED_MEDIA_TYPE` | `UNSUPPORTED_MEDIA_TYPE` | `WARN` |
+| `Exception.class` | Catch-all for unhandled system or runtime failures | `500 INTERNAL_SERVER_ERROR` | `INTERNAL_SERVER_ERROR` | `ERROR` (Stack Trace) |
 
 ---
 
