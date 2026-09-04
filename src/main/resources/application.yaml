@@ -20,3 +20,9 @@ spring:
       ddl-auto: validate
     open-in-view: false
     show-sql: false
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
